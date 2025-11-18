@@ -105,6 +105,7 @@ KONTAK & SUPPORT:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Pengembang Hardware: Jeffry Fane
+
 Pengembang Software: Willy Juliansyah
 
 Supervisor:
