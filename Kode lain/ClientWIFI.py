@@ -1,0 +1,178 @@
+import socket
+import time
+import pandas as pd
+import os
+import sys
+import struct
+
+# ==================================================================
+# --- PATH CONFIGURATION ---
+# ==================================================================
+# 1. Direktori utama untuk menyimpan rekaman
+path_utama = r"D:\EKG\Skripsi Willy\Perbandingan dengan alat klinis"
+# 2. Nama sub-folder untuk sesi perekaman ini
+nama_subjek = "Jeffry_Tidur" # Ganti nama folder sesuai kebutuhan
+# 3. Path lengkap tempat file CSV akan disimpan
+save_path = os.path.join(path_utama, nama_subjek)
+
+# ==================================================================
+# --- NETWORK COMMUNICATION SETUP ---
+# ==================================================================
+# PENTING: Atur IP dan Port ESP32 Anda di sini.
+# IP address default untuk ESP32 dalam mode AP biasanya 192.168.4.1
+ESP32_IP = "192.168.4.1" 
+# Port yang diatur dalam kode Arduino Anda
+ESP32_PORT = 8888        
+
+# ==================================================================
+# --- FRAME & DATA SETUP ---
+# ==================================================================
+STX, ETX = 0x02, 0x03
+EXPECTED_FRAME_SIZE = 48
+EXPECTED_PAYLOAD_SIZE = 49
+buf = bytearray()
+
+# --- Buka Koneksi Socket TCP ---
+client_socket = None
+try:
+    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    client_socket.settimeout(5.0)
+    print(f"Connecting to ESP32 via TCP at {ESP32_IP}:{ESP32_PORT}...")
+    client_socket.connect((ESP32_IP, ESP32_PORT))
+    client_socket.settimeout(1.0)
+    print("✅ Connection successful!")
+
+except socket.error as e:
+    print(f"Error opening TCP connection: {e}")
+    print("Please check the IP address and ensure your computer is connected to the ESP32's Wi-Fi AP.")
+    sys.exit(1)
+
+# ==================================================================
+# --- DATA CONVERSION SETUP ---
+# ==================================================================
+VREF = 2.42
+GAIN = 200
+RESOLUTION = 24
+LSB_SIZE = VREF / (2**RESOLUTION - 1)
+
+def convert_to_millivolts(adc_value):
+    return adc_value * LSB_SIZE * 1000 / GAIN
+
+# ==================================================================
+# --- MAIN PROGRAM ---
+# ==================================================================
+try:
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+        print(f"Created directory: {save_path}")
+
+    print("Program started. Listening for data...")
+    timerecord = 10
+    iteration = 1
+    
+    frames_processed = 0
+    checksum_errors = 0
+    framing_errors = 0
+
+    while True:
+        raw_data = {"I": [], "II": [], "III": [], "AVR": [], "AVL": [], "AVF": [], "V1": [], "V2": [],"V3": [], "V4": [], "V5": [], "V6": [] }
+        converted_data = {"I-mV": [], "II-mV": [], "III-mV": [], "AVR-mV": [], "AVL-mV": [], "AVF-mV": [], "V1-mV": [], "V2-mV": [], "V3-mV": [], "V4-mV": [], "V5-mV": [], "V6-mV": []}
+
+        print(f"\n--- Starting Iteration {iteration} (Recording for {timerecord} seconds) ---")
+        t_end = time.time() + timerecord
+
+        while time.time() < t_end:
+            chunk = b''
+            try:
+                chunk = client_socket.recv(4096)
+            except socket.timeout:
+                continue
+
+            if not chunk:
+                print("Connection closed by ESP32. Exiting.")
+                break
+            
+            buf.extend(chunk)
+            
+            while True:
+                start_index = buf.find(STX)
+                if start_index == -1: break 
+
+                end_index = start_index + EXPECTED_PAYLOAD_SIZE + 1
+                if len(buf) <= end_index: break
+                
+                if buf[end_index] == ETX:
+                    payload = buf[start_index + 1 : end_index]
+                    frame_data = payload[:EXPECTED_FRAME_SIZE]
+                    received_checksum = payload[-1]
+                    calculated_checksum = sum(frame_data) & 0xFF
+
+                    if calculated_checksum == received_checksum:
+                        del buf[:end_index + 1]
+                        frames_processed += 1
+                        try:
+                            vals = struct.unpack('<12i', frame_data)
+                            
+                            # --- BARIS UNTUK PRINT SEMUA 12 NILAI REAL-TIME ---
+                            output_string = (
+                                f"I: {vals[0]:<7d} | II: {vals[1]:<7d} | III: {vals[2]:<7d} | "
+                                f"aVR: {vals[3]:<7d} | aVL: {vals[4]:<7d} | aVF: {vals[5]:<7d} || "
+                                f"V1: {vals[6]:<7d} | V2: {vals[7]:<7d} | V3: {vals[8]:<7d} | "
+                                f"V4: {vals[9]:<7d} | V5: {vals[10]:<7d} | V6: {vals[11]:<7d}"
+                            )
+                            print(output_string, end='\r')
+                            # ----------------------------------------------------
+
+                            (v1,v2,v3,v4,v5,v6,v7,v8,v9,v10,v11,v12) = vals
+                            raw_data["I"].append(v1); raw_data["II"].append(v2); raw_data["III"].append(v3)
+                            raw_data["AVR"].append(v4); raw_data["AVL"].append(v5); raw_data["AVF"].append(v6)
+                            raw_data["V1"].append(v7); raw_data["V2"].append(v8); raw_data["V3"].append(v9)
+                            raw_data["V4"].append(v10); raw_data["V5"].append(v11); raw_data["V6"].append(v12)
+                            converted_data["I-mV"].append(convert_to_millivolts(v1)); converted_data["II-mV"].append(convert_to_millivolts(v2)); converted_data["III-mV"].append(convert_to_millivolts(v3))
+                            converted_data["AVR-mV"].append(convert_to_millivolts(v4)); converted_data["AVL-mV"].append(convert_to_millivolts(v5)); converted_data["AVF-mV"].append(convert_to_millivolts(v6))
+                            converted_data["V1-mV"].append(convert_to_millivolts(v7)); converted_data["V2-mV"].append(convert_to_millivolts(v8)); converted_data["V3-mV"].append(convert_to_millivolts(v9))
+                            converted_data["V4-mV"].append(convert_to_millivolts(v10)); converted_data["V5-mV"].append(convert_to_millivolts(v11)); converted_data["V6-mV"].append(convert_to_millivolts(v12))
+                        except Exception as e:
+                            print(f"Error processing valid frame: {e}")
+                    else:
+                        checksum_errors += 1
+                        del buf[:start_index + 1]
+                else:
+                    framing_errors += 1
+                    del buf[:start_index + 1]
+
+        # --- SIMPAN DATA UNTUK ITERASI YANG SELESAI ---
+        # Hentikan print real-time agar ringkasan iterasi bisa tercetak dengan benar
+        print(" " * 150, end='\r') # Baris kosong untuk membersihkan tampilan real-time
+        
+        print(f"Iteration {iteration} finished.")
+        print(f"  - Frames processed: {frames_processed}")
+        print(f"  - Checksum errors: {checksum_errors}")
+        print(f"  - Framing errors: {framing_errors}")
+        
+        frames_processed, checksum_errors, framing_errors = 0, 0, 0
+
+        if any(len(v) > 0 for v in raw_data.values()):
+            df_raw = pd.DataFrame(raw_data)
+            file_path_raw = os.path.join(save_path, f'Data_{iteration}_raw.csv')
+            df_raw.to_csv(file_path_raw, index=False)
+            print(f'✅ Raw data saved ({len(df_raw)} samples) at {file_path_raw}.')
+            df_converted = pd.DataFrame(converted_data)
+            file_path_converted = os.path.join(save_path, f'Data_{iteration}_converted.csv')
+            df_converted.to_csv(file_path_converted, index=False)
+            print(f'✅ Converted mV data saved at {file_path_converted}.')
+        else:
+            print(f"⚠️ No data was collected in iteration {iteration}. Skipping file save.")
+
+        iteration += 1
+        time.sleep(2)
+
+except KeyboardInterrupt:
+    print("\nProgram stopped by user.")
+except Exception as e:
+    print(f"\nAn unexpected error occurred: {e}")
+finally:
+    if client_socket:
+        client_socket.close()
+        print(f"\nTCP connection closed.")
+    print("Program finished.")
