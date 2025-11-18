@@ -37,25 +37,25 @@ Pastikan lingkungan pengembangan Anda memiliki:
 ### 2. Setup Environment
 Buka terminal/CMD di direktori proyek, lalu jalankan perintah berikut:
 
-# 1. Buat Virtual Environment
+#### 1. Buat Virtual Environment
 python -m venv venv
 
-# 2. Aktifkan Virtual Environment
+#### 2. Aktifkan Virtual Environment
 venv\Scripts\activate
 
-# 3. Upgrade pip
+#### 3. Upgrade pip
 python -m pip install --upgrade pip
 
-# 4. Install Library Dependencies (Sesuai build.spec)
+#### 4. Install Library Dependencies (Sesuai build.spec)
 pip install numpy pandas scipy matplotlib scikit-learn xgboost neurokit2 PyWavelets joblib Pillow pyserial openpyxl
 
-# 5. Install PyInstaller
+#### 5. Install PyInstaller
 pip install pyinstaller
 
-# 6. Deploy
+#### 6. Deploy
 pyinstaller --clean build_exe_release.spec
 
-# 7. Hasil Build
+#### 7. Hasil Build
 file aplikasi akan muncul di folder dist/AplikasiEKG.exe
 
 ---
