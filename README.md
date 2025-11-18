@@ -46,8 +46,9 @@ venv\Scripts\activate
 #### 3. Upgrade pip
 python -m pip install --upgrade pip
 
-#### 4. Install Library Dependencies (Sesuai build.spec)
-pip install numpy pandas scipy matplotlib scikit-learn xgboost neurokit2 PyWavelets joblib Pillow pyserial openpyxl
+#### 4. Install Library Dependencies (Sesuai dengan kode pada gui_main.py, ekg_processor.py, dan ekg_ekstrak_data.py)
+* pip install numpy pandas scipy matplotlib scikit-learn xgboost neurokit2 PyWavelets joblib Pillow pyserial openpyxl tkinter threading socket struct
+* kalau kurang atau lebih silahkan disesuaikan
 
 #### 5. Install PyInstaller
 pip install pyinstaller
