@@ -53,7 +53,9 @@ pip install numpy pandas scipy matplotlib scikit-learn xgboost neurokit2 PyWavel
 pip install pyinstaller
 
 #### 6. Deploy
-pyinstaller --clean build_exe_release.spec
+* Download semua file disini
+* Pada terminal, arahkan ke direktori tempat file berasal, CD "D:\EKG\Skripsi Willy\Software EKG 12 Lead"
+* pyinstaller --clean build_exe_release.spec
 
 #### 7. Hasil Build
 file aplikasi akan muncul di folder dist/AplikasiEKG.exe
@@ -71,14 +73,7 @@ Ini wajib untuk menjalankan aplikasi.
 2.  Ikuti instruksi instalasi.
 3.  **_Restart_ komputer** jika diminta setelah instalasi selesai.
 
-### Langkah 2: Ekstrak dan Penempatan File
-
-1.  Ekstrak _file_ **ZIP** ke lokasi pilihan Anda (Contoh: `C:\Program Files\AplikasiEKG\`).
-
-> ⚠️ **PENTING: Jangan Pisahkan File!**
-> Pastikan _file_ utama **`AplikasiEKG.exe`** berada dalam _folder_ yang **sama** dengan _folder_ **`Model Final 2`**. Mengubah nama atau memindahkan _folder_ model akan menyebabkan error.
-
-### Langkah 3: Jalankan Aplikasi
+### Langkah 2: Jalankan Aplikasi
 
 1.  _Double-click_ **`AplikasiEKG.exe`**.
 2.  Jika muncul peringatan **Windows Defender SmartScreen**, klik **"More info"** lalu **"Run anyway"**.
