@@ -2,9 +2,9 @@
 Proyek Pengembangan Pipeline dan Software 12 Lead
 
 ╔══════════════════════════════════════════════════════════════╗
-║  APLIKASI ANALISIS SINYAL EKG 12 LEAD                        ║
-║  Versi 1.0 - 2025                                            ║
-║  Departemen Teknik Elektro - Universitas Padjadjaran         ║
+  APLIKASI ANALISIS SINYAL EKG 12 LEAD                        
+  Versi 1.0 - 2025                                            
+  Departemen Teknik Elektro - Universitas Padjadjaran         
 ╚══════════════════════════════════════════════════════════════╝
 
 INSTALASI PERTAMA KALI:
