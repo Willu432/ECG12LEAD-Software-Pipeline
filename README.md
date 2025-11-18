@@ -24,7 +24,43 @@ Aplikasi **Standalone** berbasis desktop (Windows 64-bit) untuk akuisisi, visual
 
 ---
 
-## 📥 Instalasi Pertama Kali (WAJIB!)
+## 👨‍💻 PANDUAN DEVELOPER (BUILD & DEPLOY)
+
+Bagian ini ditujukan untuk pengembang yang ingin memodifikasi kode sumber atau melakukan _re-build_ aplikasi. Konfigurasi build menggunakan `build_exe_release.spec` yang telah disesuaikan untuk menangani _hidden imports_ yang kompleks.
+
+### 1. Prasyarat (Prerequisites)
+Pastikan lingkungan pengembangan Anda memiliki:
+* **OS:** Windows 10/11 (64-bit)
+* **Python:** Versi 3.9 atau lebih baru
+* **Git:** Untuk manajemen versi
+
+### 2. Setup Environment
+Buka terminal/CMD di direktori proyek, lalu jalankan perintah berikut:
+
+# 1. Buat Virtual Environment
+python -m venv venv
+
+# 2. Aktifkan Virtual Environment
+venv\Scripts\activate
+
+# 3. Upgrade pip
+python -m pip install --upgrade pip
+
+# 4. Install Library Dependencies (Sesuai build.spec)
+pip install numpy pandas scipy matplotlib scikit-learn xgboost neurokit2 PyWavelets joblib Pillow pyserial openpyxl
+
+# 5. Install PyInstaller
+pip install pyinstaller
+
+# 6. Deploy
+pyinstaller --clean build_exe_release.spec
+
+# 7. Hasil Build
+file aplikasi akan muncul di folder dist/AplikasiEKG.exe
+
+---
+
+## 📥 Panduan Instalasi Pertama Kali User (WAJIB!)
 
 Aplikasi ini bersifat **STANDALONE** (tidak perlu _install_ Python, Library, atau _Environment_).
 
