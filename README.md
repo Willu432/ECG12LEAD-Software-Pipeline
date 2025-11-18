@@ -4,7 +4,7 @@ Proyek Pengembangan Pipeline dan Software 12 Lead
 ╔══════════════════════════════════════════════════════════════╗
 ║  APLIKASI ANALISIS SINYAL EKG 12 LEAD                        ║
 ║  Versi 1.0 - 2025                                            ║
-║  Departemen Teknik Elektro - Universitas Padjadjaran        ║
+║  Departemen Teknik Elektro - Universitas Padjadjaran         ║
 ╚══════════════════════════════════════════════════════════════╝
 
 INSTALASI PERTAMA KALI:
@@ -67,16 +67,6 @@ TROUBLESHOOTING:
 ❌ Grafik tidak muncul
    → Pastikan file CSV format sudah benar
    → Cek log aktivitas untuk detail error
-
-
-TIDAK PERLU INSTALL:
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-✓ Python
-✓ Library atau dependencies apapun
-✓ Environment setup
-
-Aplikasi ini STANDALONE dan siap pakai!
 
 
 SYSTEM REQUIREMENTS:
